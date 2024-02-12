@@ -27,7 +27,7 @@ param chatGptDeploymentName string = 'chat-gpt-35-turbo'
 param chatGptModelName string = 'gpt-35-turbo'
 param chatGptModelVersion string = '0613'
 param embeddingDeploymentName string = 'embedding'
-param embeddingDeploymentCapacity int = 10
+param embeddingDeploymentCapacity int = 7
 param embeddingModelName string = 'text-embedding-ada-002'
 
 param formRecognizerSkuName string = 'S0'
