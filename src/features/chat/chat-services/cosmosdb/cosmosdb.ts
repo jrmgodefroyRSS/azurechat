@@ -4,6 +4,7 @@ import {
 } from "@/features/chat/chat-services/chat-service";
 import {
   ChatMessageModel,
+  TokenizedChatCompletionMessage,
   MESSAGE_ATTRIBUTE,
 } from "@/features/chat/chat-services/models";
 import { CosmosDBContainer } from "@/features/common/cosmos";
@@ -24,9 +25,9 @@ export class CosmosDBChatMessageHistory {
     this.userId = userId;
   }
 
-  async getMessages(): Promise<ChatCompletionMessage[]> {
+  async getMessages(): Promise<TokenizedChatCompletionMessage[]> {
     const chats = await FindAllChats(this.sessionId);
-    return mapOpenAIChatMessages(chats);
+    return chats;
   }
 
   async clear(): Promise<void> {
@@ -34,7 +35,7 @@ export class CosmosDBChatMessageHistory {
     await container.delete();
   }
 
-  async addMessage(message: ChatCompletionMessage, citations: string = "") {
+  async addMessage(message: ChatCompletionMessage, tokensNb: number, citations: string = "") {
     const modelToSave: ChatMessageModel = {
       id: uniqueId(),
       createdAt: new Date(),
@@ -45,6 +46,7 @@ export class CosmosDBChatMessageHistory {
       threadId: this.sessionId,
       userId: this.userId,
       context: citations,
+      tokens: tokensNb
     };
 
     await UpsertChat(modelToSave);

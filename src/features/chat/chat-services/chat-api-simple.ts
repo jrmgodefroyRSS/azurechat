@@ -4,7 +4,9 @@ import { AI_NAME } from "@/features/theme/customise";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { initAndGuardChatSession } from "./chat-thread-service";
 import { CosmosDBChatMessageHistory } from "./cosmosdb/cosmosdb";
-import { PromptGPTProps } from "./models";
+import { PromptGPTProps, TokenizedChatCompletionMessage } from "./models";
+
+import openaiTokenCounter from "openai-gpt-token-counter";
 
 export const ChatAPISimple = async (props: PromptGPTProps) => {
   const { lastHumanMessage, chatThread } = await initAndGuardChatSession(props);
@@ -18,22 +20,51 @@ export const ChatAPISimple = async (props: PromptGPTProps) => {
     userId: userId,
   });
 
+  const newMessageTokenCount = openaiTokenCounter.chat( [{ role: "user", content: lastHumanMessage.content }], 'gpt-3.5-turbo');
+
   await chatHistory.addMessage({
     content: lastHumanMessage.content,
     role: "user",
-  });
+  }, newMessageTokenCount);
 
-  const history = await chatHistory.getMessages();
-  const topHistory = history.slice(history.length - 30, history.length);
+  let history = await chatHistory.getMessages();
+
+  const systemMessage = `-You are ${AI_NAME} who is a helpful AI Assistant.
+  - You will provide clear and concise queries, and you will respond with polite and professional answers.
+  - You will answer questions truthfully and accurately.`;
+
+  const estimatedTokenAnswerTolerance = 100;
+  // TODO: Get the model from config
+  const systemTokenCount = openaiTokenCounter.chat( [{ role: "system", content: systemMessage }], 'gpt-3.5-turbo');
+  const historyTokenCount = history.reduce((sum, current) => sum + current.tokens, 0);
+  const totalTokenCount = systemTokenCount + historyTokenCount;
+  
+  if (totalTokenCount >= 4096) { // Then shift down the chat context:
+    const overflow = totalTokenCount - 4096;
+    let tokenCount = 0;
+    let firstMessage: TokenizedChatCompletionMessage;
+    do {
+      firstMessage = history[0];    
+      history = history.slice(1); 
+      if (firstMessage) {
+        tokenCount = tokenCount + firstMessage.tokens;
+      }
+    } while(firstMessage.role === "user" ||  tokenCount < overflow + estimatedTokenAnswerTolerance);
+  }
+
+  const topHistory = history.map((h => {
+    return {
+      role: h.role,
+      content: h.content,
+    };
+  }));
 
   try {
     const response = await openAI.chat.completions.create({
       messages: [
         {
           role: "system",
-          content: `-You are ${AI_NAME} who is a helpful AI Assistant.
-          - You will provide clear and concise queries, and you will respond with polite and professional answers.
-          - You will answer questions truthfully and accurately.`,
+          content: systemMessage,
         },
         ...topHistory,
       ],
@@ -43,10 +74,11 @@ export const ChatAPISimple = async (props: PromptGPTProps) => {
 
     const stream = OpenAIStream(response, {
       async onCompletion(completion) {
+        const completionTokenCount = openaiTokenCounter.chat( [{ role: "user", content: completion }], 'gpt-3.5-turbo');
         await chatHistory.addMessage({
           content: completion,
           role: "assistant",
-        });
+        }, completionTokenCount);
       },
     });
     return new StreamingTextResponse(stream);

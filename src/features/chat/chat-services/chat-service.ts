@@ -78,5 +78,6 @@ export const newChatModel = (): ChatMessageModel => {
     type: MESSAGE_ATTRIBUTE,
     isDeleted: false,
     context: "",
+    tokens: 0
   };
 };
