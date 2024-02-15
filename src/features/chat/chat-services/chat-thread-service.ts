@@ -166,6 +166,18 @@ export const updateChatThreadTitle = async (
   return chatThread;
 };
 
+export const editChatThreadTitle = async (
+  chatThread: ChatThreadModel,
+  newTitle: string
+) => {
+  const updatedChatThread = await UpsertChatThread({
+    ...chatThread,
+    name: newTitle,
+  });
+
+  return chatThread;
+};
+
 export const CreateChatThread = async () => {
   const modelToSave: ChatThreadModel = {
     name: "new chat",
