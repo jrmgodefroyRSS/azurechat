@@ -52,6 +52,7 @@ const ChatRow: FC<ChatRowProps> = (props) => {
                   height={40}
                   strokeWidth={1.2}
                   className="text-primary"
+                  color="#D75A19"
                 />
               )}
             </div>
@@ -79,7 +80,7 @@ const ChatRow: FC<ChatRowProps> = (props) => {
             "-m-4 p-4 prose prose-slate dark:prose-invert break-words prose-p:leading-relaxed prose-pre:p-0 max-w-non",
             props.type === "assistant"
               ? "bg-secondary"
-              : "bg-primary text-white"
+              : "bg-ring text-white"
           )}
         >
           <Markdown content={props.message} />

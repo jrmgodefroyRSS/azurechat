@@ -18,21 +18,21 @@ export function ThemeToggle() {
           onClick={() => setTheme("light")}
           className="h-[40px] w-[40px] rounded-full"
         >
-          <Sun size={18} />
+          <Sun size={18} color="#D75A19"/>
         </TabsTrigger>
         <TabsTrigger
           value="dark"
           onClick={() => setTheme("dark")}
           className="h-[40px] w-[40px]  rounded-full"
         >
-          <Moon size={18} />
+          <Moon size={18} color="#D75A19"/>
         </TabsTrigger>
         <TabsTrigger
           value="system"
           onClick={() => setTheme("system")}
           className="h-[40px] w-[40px]  rounded-full"
         >
-          <Laptop2 size={18} />
+          <Laptop2 size={18} color="#D75A19"/>
         </TabsTrigger>
       </TabsList>
     </Tabs>
