@@ -1,6 +1,5 @@
 import { userHashedId } from "@/features/auth/helpers";
 import { OpenAIInstance } from "@/features/common/openai";
-import { AI_NAME } from "@/features/theme/customise";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { initAndGuardChatSession } from "./chat-thread-service";
 import { CosmosDBChatMessageHistory } from "./cosmosdb/cosmosdb";
@@ -27,15 +26,11 @@ export const ChatAPISimple = async (props: PromptGPTProps) => {
     role: "user",
   }, newMessageTokenCount);
 
-  let history = await chatHistory.getMessages();
-
-  const systemMessage = `-You are ${AI_NAME} who is a helpful AI Assistant.
-  - You will provide clear and concise queries, and you will respond with polite and professional answers.
-  - You will answer questions truthfully and accurately.`;
+  let history = await chatHistory.getMessages();  
 
   const estimatedTokenAnswerTolerance = 100;
   // TODO: Get the model from config
-  const systemTokenCount = openaiTokenCounter.chat( [{ role: "system", content: systemMessage }], 'gpt-3.5-turbo');
+  const systemTokenCount = openaiTokenCounter.chat( [{ role: "system", content: props.systemMessage }], 'gpt-3.5-turbo');
   const historyTokenCount = history.reduce((sum, current) => sum + current.tokens, 0);
   const totalTokenCount = systemTokenCount + historyTokenCount;
   
@@ -64,7 +59,7 @@ export const ChatAPISimple = async (props: PromptGPTProps) => {
       messages: [
         {
           role: "system",
-          content: systemMessage,
+          content: props.systemMessage,
         },
         ...topHistory,
       ],

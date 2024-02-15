@@ -11,7 +11,7 @@ import { useChatInputDynamicHeight } from "./use-chat-input-dynamic-height";
 interface Props {}
 
 const ChatInput: FC<Props> = (props) => {
-  const { setInput, handleSubmit, isLoading, input, chatBody } =
+  const { setInput, handleSubmit, isLoading, input, chatBody, systemMessage } =
     useChatContext();
 
   const { speechEnabled } = useGlobalConfigContext();
