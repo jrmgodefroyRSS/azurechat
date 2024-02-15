@@ -18,11 +18,15 @@ export const StartNewChat: FC<Prop> = (props) => {
         </Typography>
         <div className="flex flex-col gap-2">
           <p className="">
-            Welcome to {AI_NAME}. You should interact in a friendly manner with
-            the AI assistant and refrain from participating in any harmful
-            activities.
+            Bienvenue sur l’environnement Azure OpenAI de RATP Smart Systems. 
+            Cet environnement est sûr et dédié aux collaborateurs RATP Smart Systems.
           </p>
-          <p>You can start a new chat with me by clicking the button below.</p>
+          <p className="">
+            Nous vous encourageons à utiliser cet outil avec discernement et à prendre du recul sur les résultats fournis.
+          </p>
+          <p className="">
+            Vous pouvez démarrer une nouvelle conversation avec moi en cliquant sur le bouton ci-dessous.
+          </p>
         </div>
         <div className="-mx-5 -mb-5 p-5 flex flex-col border-t bg-muted">
           <NewChat />

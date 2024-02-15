@@ -31,7 +31,7 @@ const UserProfile = () => {
                 />
               </Avatar>
             ) : (
-              <UserCircle></UserCircle>
+              <UserCircle color="#D75A19"></UserCircle>
             )}
           </Button>
         </div>
