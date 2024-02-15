@@ -42,6 +42,7 @@ export interface ChatThreadModel {
 
 export interface PromptGPTBody {
   id: string; // thread id
+  systemMessage: string;
   chatType: ChatType;
   conversationStyle: ConversationStyle;
   chatOverFileName: string;
