@@ -1,4 +1,5 @@
 import { Message } from "ai";
+import { ChatCompletionMessage } from "openai/resources";
 
 export const CHAT_DOCUMENT_ATTRIBUTE = "CHAT_DOCUMENT";
 export const CHAT_THREAD_ATTRIBUTE = "CHAT_THREAD";
@@ -13,7 +14,12 @@ export interface ChatMessageModel {
   content: string;
   role: ChatRole;
   context: string;
+  tokens: number;
   type: "CHAT_MESSAGE";
+}
+
+export interface TokenizedChatCompletionMessage extends ChatCompletionMessage {
+  tokens: number;
 }
 
 export type ConversationStyle = "creative" | "balanced" | "precise";
@@ -36,6 +42,7 @@ export interface ChatThreadModel {
 
 export interface PromptGPTBody {
   id: string; // thread id
+  systemMessage: string;
   chatType: ChatType;
   conversationStyle: ConversationStyle;
   chatOverFileName: string;

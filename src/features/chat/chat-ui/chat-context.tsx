@@ -21,9 +21,15 @@ import {
   TextToSpeechProps,
   useTextToSpeech,
 } from "./chat-speech/use-text-to-speech";
+import { AI_NAME } from "@/features/theme/customise";
 
 interface ChatContextProps extends UseChatHelpers {
   id: string;
+
+  systemMessage: string;
+  setSystemMessage: (message: string) => void;
+  onSystemMessageChange: (value: string) => void;
+
   setChatBody: (body: PromptGPTBody) => void;
   chatBody: PromptGPTBody;
   fileState: FileState;
@@ -44,6 +50,11 @@ interface Prop {
 export const ChatProvider: FC<Prop> = (props) => {
   const { showError } = useGlobalMessageContext();
 
+  // TODO: Get the prompt from config
+  const defaultSysMsg = `You are ${AI_NAME} who is a helpful AI Assistant. You will provide clear and concise queries, and you will respond with polite and professional answers. You will answer questions truthfully and accurately.`;
+
+  const [systemMessage, setSystemMessage] = useState<string>(defaultSysMsg);
+
   const speechSynthesizer = useTextToSpeech();
   const speechRecognizer = useSpeechToText({
     onSpeech(value) {
@@ -58,6 +69,7 @@ export const ChatProvider: FC<Prop> = (props) => {
     chatType: props.chatThread.chatType,
     conversationStyle: props.chatThread.conversationStyle,
     chatOverFileName: props.chatThread.chatOverFileName,
+    systemMessage: systemMessage
   });
 
   const { textToSpeech } = speechSynthesizer;
@@ -91,6 +103,10 @@ export const ChatProvider: FC<Prop> = (props) => {
     setChatBody({ ...chatBody, conversationStyle: value });
   };
 
+  const onSystemMessageChange = (value: string) => {
+    setChatBody({ ...chatBody, systemMessage: value });
+  };
+
   function onError(error: Error) {
     showError(error.message, response.reload);
   }
@@ -99,6 +115,9 @@ export const ChatProvider: FC<Prop> = (props) => {
     <ChatContext.Provider
       value={{
         ...response,
+        systemMessage, 
+        setSystemMessage,
+        onSystemMessageChange,
         setChatBody,
         chatBody,
         onChatTypeChange,

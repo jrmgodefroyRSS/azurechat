@@ -7,6 +7,8 @@ import { initAndGuardChatSession } from "./chat-thread-service";
 import { CosmosDBChatMessageHistory } from "./cosmosdb/cosmosdb";
 import { PromptGPTProps } from "./models";
 
+import openaiTokenCounter from "openai-gpt-token-counter";
+
 const SYSTEM_PROMPT = `You are ${AI_NAME} who is a helpful AI Assistant.`;
 
 const CONTEXT_PROMPT = ({
@@ -80,16 +82,19 @@ export const ChatAPIData = async (props: PromptGPTProps) => {
 
     const stream = OpenAIStream(response, {
       async onCompletion(completion) {
+        const newMessageTokenCount = openaiTokenCounter.chat( [{ role: "user", content: completion }], 'gpt-3.5-turbo');
         await chatHistory.addMessage({
           content: lastHumanMessage.content,
           role: "user",
-        });
+        }, newMessageTokenCount);
 
+        const completionTokenCount = openaiTokenCounter.chat( [{ role: "user", content: completion }], 'gpt-3.5-turbo');
         await chatHistory.addMessage(
           {
             content: completion,
             role: "assistant",
           },
+          completionTokenCount,
           context
         );
       },

@@ -27,7 +27,7 @@ export const MainMenu = () => {
           className="rounded-full w-[40px] h-[40px] p-1 text-primary"
           variant={"outline"}
         >
-          {isMenuOpen ? <PanelLeftClose /> : <PanelRightClose />}
+          {isMenuOpen ? <PanelLeftClose color="#D75A19"/> : <PanelRightClose color="#D75A19"/>}
         </Button>
         <Button
           asChild
@@ -44,7 +44,7 @@ export const MainMenu = () => {
           variant={"outline"}
         >
           <Link href="/" title="Chat">
-            <MessageCircle />
+            <MessageCircle color="#D75A19"/>
           </Link>
         </Button>
         {session?.user?.isAdmin ? (
@@ -54,7 +54,7 @@ export const MainMenu = () => {
             variant={"outline"}
           >
             <Link href="/reporting" title="Reporting">
-              <LayoutDashboard />
+              <LayoutDashboard color="#D75A19"/>
             </Link>
           </Button>
         ) : (
@@ -66,7 +66,7 @@ export const MainMenu = () => {
           variant={"outline"}
         >
           <Link href="/change-log" title="change log" className="relative">
-            <Triangle />
+            <Triangle  color="#D75A19"/>
             <UpdateIndicator />
           </Link>
         </Button>
