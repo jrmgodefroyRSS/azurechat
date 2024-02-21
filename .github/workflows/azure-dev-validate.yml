@@ -26,7 +26,7 @@ jobs:
       - name: Run Microsoft Security DevOps Analysis
         uses: microsoft/security-devops-action@preview
         id: msdo
-        continue-on-error: true
+        continue-on-error: false
         with:
           tools: templateanalyzer
         env:
