@@ -30,7 +30,8 @@ export const ChatAPISimple = async (props: PromptGPTProps) => {
 
   const estimatedTokenAnswerTolerance = 100;
   // TODO: Get the model from config
-  const systemTokenCount = openaiTokenCounter.chat( [{ role: "system", content: props.systemMessage }], 'gpt-3.5-turbo');
+  const systemTokenCount = props.systemMessage.length / 4; // TODO: Just for testing!
+    /*openaiTokenCounter.chat( [{ role: "system", content: props.systemMessage }], 'gpt-3.5-turbo');*/
   const historyTokenCount = history.reduce((sum, current) => sum + current.tokens, 0);
   const totalTokenCount = systemTokenCount + historyTokenCount;
   
@@ -69,7 +70,8 @@ export const ChatAPISimple = async (props: PromptGPTProps) => {
 
     const stream = OpenAIStream(response, {
       async onCompletion(completion) {
-        const completionTokenCount = openaiTokenCounter.chat( [{ role: "user", content: completion }], 'gpt-3.5-turbo');
+        const completionTokenCount = completion.length / 4; // TODO: Just for testing!
+        /*openaiTokenCounter.chat( [{ role: "user", content: completion }], 'gpt-3.5-turbo');*/
         await chatHistory.addMessage({
           content: completion,
           role: "assistant",
