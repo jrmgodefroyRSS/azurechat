@@ -5,7 +5,7 @@ import { initAndGuardChatSession } from "./chat-thread-service";
 import { CosmosDBChatMessageHistory } from "./cosmosdb/cosmosdb";
 import { PromptGPTProps, TokenizedChatCompletionMessage } from "./models";
 
-import openaiTokenCounter from "openai-gpt-token-counter";
+// import openaiTokenCounter from "openai-gpt-token-counter";
 
 export const ChatAPISimple = async (props: PromptGPTProps) => {
   const { lastHumanMessage, chatThread } = await initAndGuardChatSession(props);
@@ -19,7 +19,8 @@ export const ChatAPISimple = async (props: PromptGPTProps) => {
     userId: userId,
   });
 
-  const newMessageTokenCount = openaiTokenCounter.chat( [{ role: "user", content: lastHumanMessage.content }], 'gpt-3.5-turbo');
+  const newMessageTokenCount = lastHumanMessage.content.length /4; // TODO: Just for testing! 
+  /* openaiTokenCounter.chat( [{ role: "user", content: lastHumanMessage.content }], 'gpt-3.5-turbo'); */
 
   await chatHistory.addMessage({
     content: lastHumanMessage.content,
