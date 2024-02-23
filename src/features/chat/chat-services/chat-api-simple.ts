@@ -5,22 +5,21 @@ import { initAndGuardChatSession } from "./chat-thread-service";
 import { CosmosDBChatMessageHistory } from "./cosmosdb/cosmosdb";
 import { PromptGPTProps, TokenizedChatCompletionMessage } from "./models";
 
-// import openaiTokenCounter from "openai-gpt-token-counter";
+import { encodingForModel } from "js-tiktoken";
 
 export const ChatAPISimple = async (props: PromptGPTProps) => {
   const { lastHumanMessage, chatThread } = await initAndGuardChatSession(props);
 
   const openAI = OpenAIInstance();
-
   const userId = await userHashedId();
+  const encoder = encodingForModel("gpt-3.5-turbo");
 
   const chatHistory = new CosmosDBChatMessageHistory({
     sessionId: chatThread.id,
     userId: userId,
   });
 
-  const newMessageTokenCount = lastHumanMessage.content.length /4; // TODO: Just for testing! 
-  /* openaiTokenCounter.chat( [{ role: "user", content: lastHumanMessage.content }], 'gpt-3.5-turbo'); */
+  const newMessageTokenCount = encoder.encode(lastHumanMessage.content).length;
 
   await chatHistory.addMessage({
     content: lastHumanMessage.content,
@@ -31,8 +30,7 @@ export const ChatAPISimple = async (props: PromptGPTProps) => {
 
   const estimatedTokenAnswerTolerance = 100;
   // TODO: Get the model from config
-  const systemTokenCount = props.systemMessage.length / 4; // TODO: Just for testing!
-    /*openaiTokenCounter.chat( [{ role: "system", content: props.systemMessage }], 'gpt-3.5-turbo');*/
+  const systemTokenCount = encoder.encode(props.systemMessage).length;
   const historyTokenCount = history.reduce((sum, current) => sum + current.tokens, 0);
   const totalTokenCount = systemTokenCount + historyTokenCount;
   
@@ -71,8 +69,7 @@ export const ChatAPISimple = async (props: PromptGPTProps) => {
 
     const stream = OpenAIStream(response, {
       async onCompletion(completion) {
-        const completionTokenCount = completion.length / 4; // TODO: Just for testing!
-        /*openaiTokenCounter.chat( [{ role: "user", content: completion }], 'gpt-3.5-turbo');*/
+        const completionTokenCount = encoder.encode(completion).length;
         await chatHistory.addMessage({
           content: completion,
           role: "assistant",
