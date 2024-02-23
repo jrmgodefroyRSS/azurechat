@@ -41,7 +41,6 @@
     "next-auth": "^4.24.4",
     "next-themes": "^0.2.1",
     "openai": "^4.14.2",
-    "openai-gpt-token-counter": "^1.1.0",
     "postcss": "^8.4.31",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
